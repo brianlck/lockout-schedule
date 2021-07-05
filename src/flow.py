@@ -1,18 +1,18 @@
-from typing import ClassVar, List, Tuple, Union
+from typing import List, Optional, Tuple, Union
 from queue import Queue
 import math
 
 CostType = Union[int, float]
 
 class Edge:
-    u: ClassVar(int)
-    v: ClassVar(int)
-    capacity: ClassVar(int)
-    cost: ClassVar(CostType)
-    backward_edge: ClassVar('Edge')
+    """ An edge from u to v in flow network """
+    u: int
+    v: int
+    capacity: int
+    cost: CostType
+    backward_edge: 'Edge' # backward edge for flow algorithm
 
     def __init__(self, u: int, v: int, capacity: int, cost: CostType, is_forward: bool = True) -> None:
-        """ Initialize edge from u to v with no flow """
         self.u = u
         self.v = v
         self.capacity = capacity
@@ -39,8 +39,8 @@ class Edge:
 
 class FlowNetwork:
     """ Flow Network implemented with adjacent list """
-    nodes: ClassVar(int) # number of nodes
-    adjacency_list: ClassVar(List[List['Edge']]) # Adjacency list of edges
+    nodes: int # number of nodes
+    adjacency_list: List[List['Edge']] # Adjacency list of edges
     ran: bool # whether min_cost_max_flow function is ran
 
     def __init__(self, nodes) -> None:
@@ -48,8 +48,7 @@ class FlowNetwork:
         self.adjacency_list = [[] for i in range(0, nodes)]
         self.ran = False
 
-    def add_edge(self, u: int, v: int, capacity: int, cost: CostType) -> None:
-        """ Add edge from u to v """
+    def add_edge(self, u: int, v: int, capacity: int, cost: CostType) -> 'Edge':
         assert u >= 0 and u <= self.nodes
         assert v >= 0 and v <= self.nodes
         assert capacity >= 0
@@ -59,17 +58,22 @@ class FlowNetwork:
         backward_edge.set_backward_edge(forward_edge)
         self.adjacency_list[u].append(forward_edge)
         self.adjacency_list[v].append(backward_edge)
+        return forward_edge
     
-    def get_edges(self) -> List['Edge']:
-        return [edge for adjacency in self.adjacency_list for edge in adjacency]
+    def get_edges(self) -> List[Edge]:
+        return [edge for _ in self.adjacency_list for edge in _]
 
     def __shortest_path(self, source: int, sink: int) -> Union[bool, Tuple[int, CostType, List[Edge]]]:
+        """ Helper function for shortest path in min cost max flow algorithm
+            return False if there is no path between source and sink
+            return max flow, path cost, path if otherwise
+        """
         assert source >= 0 and source <= self.nodes
         assert sink >= 0 and sink <= self.nodes
-        distance = [math.inf] * self.nodes
-        parent = [None] * self.nodes
-        in_queue = [False] * self.nodes
-        spfa_queue = Queue(maxsize=self.nodes)
+        distance: List[CostType] = [math.inf] * self.nodes
+        parent: List[Optional[Edge]] = [None] * self.nodes
+        in_queue: List[bool] = [False] * self.nodes
+        spfa_queue: Queue[int] = Queue(maxsize=self.nodes)
 
         spfa_queue.put(source)
         distance[source] = 0
@@ -86,17 +90,17 @@ class FlowNetwork:
             # no path exists
             return False
         
-        max_flow = parent[sink].get_residual_capacity()
-        current_node = sink
-        path_edges = []
+        max_flow: int = parent[sink].get_residual_capacity()
+        current_node: int = sink
+        path_edges: List[Edge] = []
         while current_node != source:
             max_flow = min(
                 max_flow, parent[current_node].get_residual_capacity())
             path_edges.append(parent[edge.v])
             current_node = parent[edge.v].u
-        return max_flow, distance[sink], path_edges
+        return (max_flow, distance[sink], path_edges)
 
-    def min_cost_max_flow(self, source: int, sink: int) -> CostType:
+    def min_cost_max_flow(self, source: int, sink: int) -> Tuple[int, CostType]:
         assert source >= 0 and source <= self.nodes
         assert sink >= 0 and sink <= self.nodes
         assert self.ran == False
@@ -107,9 +111,9 @@ class FlowNetwork:
             if result == False:
                 # No path exists
                 break
-            flow, distance, edges = result
-            max_flow += flow * distance 
+            flow, cost, edges = result
+            max_flow += flow * cost 
             for edge in edges:
                 min_cost += edge.useEdge(flow)
         self.ran = True
-        return max_flow, min_cost
+        return (max_flow, min_cost)
