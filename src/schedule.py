@@ -1,4 +1,4 @@
-from typing import Dict, Iterator, List, Optional, Set, Tuple, NewType
+from typing import Dict, Iterator, List, Optional, Set, Tuple
 from model import Availability, Contestant, Day, Host, Match, Session, Timeslot, MatchConfig
 from flow import FlowNetwork, Edge
 import itertools
@@ -52,11 +52,16 @@ class Schedule:
                           hosts: List[Host],
                           sessions: List[Session],
                           matches: List[Match],
-                          host_availabililty_list: Dict[Host, Availability],
-                          host_preference_list: Dict[Host, Availability],
-                          contestant_availability_list: Dict[Contestant, Availability],
-                          contestant_preference_list: Dict[Contestant, Availability]) -> 'Schedule':
+                          hosts_availability: Dict[Host, Availability],
+                          hosts_preference: Dict[Host, Availability],
+                          contestants_availability: Dict[Contestant, Availability],
+                          contestants_preference: Dict[Contestant, Availability]) -> 'Schedule':
         """ Generate schedule based on availability """
+        for host in hosts:
+            hosts_availability[host] = hosts_availability[host] - hosts_preference[host]
+
+        for contestant in contestants:
+            contestants_availability[contestant] = contestants_availability[contestant] - contestants_preference[contestant]
         # Construct flow network
         node_gen: Iterator[int] = itertools.count(0)
         source: int = next(node_gen)
@@ -75,12 +80,12 @@ class Schedule:
         for match in matches:
             network.add_edge(source, match_layer[match], capacity=1, cost=0)
             for host in hosts:
-                preferred_timeslots = host_preference_list[host].intersection(contestant_preference_list[match[0]].intersection(
-                    contestant_preference_list[match[1]]))
-                partially_preferred_timeslots = host_preference_list[host].intersection(contestant_preference_list[match[0]].intersection(
-                    contestant_availability_list[match[1]]).union(contestant_availability_list[match[0]].intersection(contestant_preference_list[match[1]])))
-                available_timeslots = host_preference_list[host].intersection(contestant_availability_list[match[0]].intersection(
-                    contestant_availability_list[match[1]]))
+                preferred_timeslots = hosts_preference[host].intersection(contestants_preference[match[0]].intersection(
+                    contestants_preference[match[1]]))
+                partially_preferred_timeslots = hosts_preference[host].intersection(contestants_preference[match[0]].intersection(
+                    contestants_availability[match[1]]).union(contestants_availability[match[0]].intersection(contestants_preference[match[1]])))
+                available_timeslots = hosts_preference[host].intersection(contestants_availability[match[0]].intersection(
+                    contestants_availability[match[1]]))
 
                 for timeslot in preferred_timeslots:
                     match_config_edges[(match, (host, timeslot))] = network.add_edge(
@@ -92,12 +97,12 @@ class Schedule:
                     match_config_edges[(match, (host, timeslot))] = network.add_edge(
                         match_layer[match], match_config_layer[(host, timeslot)], capacity=1, cost=1+nodes+nodes)
 
-                preferred_timeslots = host_availabililty_list[host].intersection(contestant_preference_list[match[0]].intersection(
-                    contestant_preference_list[match[1]]))
-                partially_preferred_timeslots = host_availabililty_list[host].intersection(contestant_preference_list[match[0]].intersection(
-                    contestant_availability_list[match[1]]).union(contestant_availability_list[match[0]].intersection(contestant_preference_list[match[1]])))
-                available_timeslots = host_availabililty_list[host].intersection(contestant_availability_list[match[0]].intersection(
-                    contestant_availability_list[match[1]]))
+                preferred_timeslots = hosts_availability[host].intersection(contestants_preference[match[0]].intersection(
+                    contestants_preference[match[1]]))
+                partially_preferred_timeslots = hosts_availability[host].intersection(contestants_preference[match[0]].intersection(
+                    contestants_availability[match[1]]).union(contestants_availability[match[0]].intersection(contestants_preference[match[1]])))
+                available_timeslots = hosts_availability[host].intersection(contestants_availability[match[0]].intersection(
+                    contestants_availability[match[1]]))
 
                 for timeslot in preferred_timeslots:
                     match_config_edges[(match, (host, timeslot))] = network.add_edge(
@@ -120,7 +125,8 @@ class Schedule:
                     network.add_edge(match_config_layer[(
                         host, timeslot)], timeslot_layer[timeslot], capacity=max_parallel, cost=0)
 
-        network.min_cost_max_flow()
+        network.min_cost_max_flow(source, sink)
+
         schedule = Schedule(max_parallel, max_per_day, days,
                             contestants, hosts, sessions, matches, schedule=[], unscheduled_matches=set(matches), preferred_count=0)
         for ((match, config), edge) in match_config_edges.items():

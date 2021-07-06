@@ -1,7 +1,5 @@
 from typing import NewType, List, Tuple, Set
 
-from schedule import MatchConfig
-
 Day = NewType('Day', str)
 Session = NewType('Session', str)
 Host = NewType('Host', str)
