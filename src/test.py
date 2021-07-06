@@ -1,5 +1,6 @@
 from flow import FlowNetwork
 import unittest
+from model import Timeslot
 
 from schedule import Schedule
 
@@ -33,15 +34,15 @@ class TestSchedule(unittest.TestCase):
                                                         "Evening", "Night"],
                                               matches=[("lckcode", "benson1029"), ("chengheichit", "ethening"), (
                                                   "lckcode", "chengheichit"), ("ethening", "benson1029")],
-                                              hosts_availability={"host1": set([("10/7", "Afternoon"), ("10/7", "Evening"), ("10/7", "Night"), ("11/7", "Afternoon"), (
-                                                  "11/7", "Evening"), ("11/7", "Night"), ("12/7", "Afternoon"), ("12/7", "Evening"), ("12/7", "Night")]), "host2": set([("10/7", "Evening"), ("10/7", "Night"), ("11/7", "Afternoon"), (
-                                                      "11/7", "Evening"), ("12/7", "Evening")])},
-                                              hosts_preference={"host1": set([("10/7", "Night"), (
-                                                  "11/7", "Evening"), ("11/7", "Night"), ("12/7", "Afternoon"), ("12/7", "Evening"), ("12/7", "Night")]), "host2": set([("10/7", "Evening"), ("10/7", "Night"), ("12/7", "Evening")])},
-                                              contestants_availability={"lckcode": set([("10/7", "Afternoon"), ("10/7", "Evening"), (
-                                                  "11/7", "Evening"), ("11/7", "Night"), ("12/7", "Evening")]), "benson1029": set([("10/7", "Evening"), ("10/7", "Night"), (
-                                                      "11/7", "Evening"), ("11/7", "Night")]), "chengheichit": set([("10/7", "Afternoon"),  ("12/7", "Afternoon"), ("12/7", "Evening"), ("12/7", "Night")]), "ethening": set([("10/7", "Afternoon"), ("10/7", "Evening"), ("10/7", "Night"), ("11/7", "Afternoon"), (
-                                                          "11/7", "Evening"), ("12/7", "Night")])},
-                                              contestants_preference={"lckcode": set([("10/7", "Afternoon"), ("11/7", "Night"), ("12/7", "Evening")]), "benson1029": set([("11/7", "Night")]), "chengheichit": set([("10/7", "Afternoon"), ("12/7", "Night")]), "ethening": set([("10/7", "Afternoon"), ("10/7", "Evening"), ("11/7", "Afternoon"), ("12/7", "Night")])})
+                                              hosts_availability={"host1": set([Timeslot("10/7", "Afternoon"), Timeslot("10/7", "Evening"), Timeslot("10/7", "Night"), Timeslot("11/7", "Afternoon"), Timeslot(
+                                                  "11/7", "Evening"), Timeslot("11/7", "Night"), Timeslot("12/7", "Afternoon"), Timeslot("12/7", "Evening"), Timeslot("12/7", "Night")]), "host2": set([Timeslot("10/7", "Evening"), Timeslot("10/7", "Night"), Timeslot("11/7", "Afternoon"), Timeslot(
+                                                      "11/7", "Evening"), Timeslot("12/7", "Evening")])},
+                                              hosts_preference={"host1": set([Timeslot("10/7", "Night"), Timeslot(
+                                                  "11/7", "Evening"), Timeslot("11/7", "Night"), Timeslot("12/7", "Afternoon"), Timeslot("12/7", "Evening"), Timeslot("12/7", "Night")]), "host2": set([Timeslot("10/7", "Evening"), Timeslot("10/7", "Night"), Timeslot("12/7", "Evening")])},
+                                              contestants_availability={"lckcode": set([Timeslot("10/7", "Afternoon"), Timeslot("10/7", "Evening"), Timeslot(
+                                                  "11/7", "Evening"), Timeslot("11/7", "Night"), Timeslot("12/7", "Evening")]), "benson1029": set([Timeslot("10/7", "Evening"), Timeslot("10/7", "Night"), Timeslot(
+                                                      "11/7", "Evening"), Timeslot("11/7", "Night")]), "chengheichit": set([Timeslot("10/7", "Afternoon"),  Timeslot("12/7", "Afternoon"), Timeslot("12/7", "Evening"), Timeslot("12/7", "Night")]), "ethening": set([Timeslot("10/7", "Afternoon"), Timeslot("10/7", "Evening"), Timeslot("10/7", "Night"), Timeslot("11/7", "Afternoon"), Timeslot(
+                                                          "11/7", "Evening"), Timeslot("12/7", "Night")])},
+                                              contestants_preference={"lckcode": set([Timeslot("10/7", "Afternoon"), Timeslot("11/7", "Night"), Timeslot("12/7", "Evening")]), "benson1029": set([Timeslot("11/7", "Night")]), "chengheichit": set([Timeslot("10/7", "Afternoon"), Timeslot("12/7", "Night")]), "ethening": set([Timeslot("10/7", "Afternoon"), Timeslot("10/7", "Evening"), Timeslot("11/7", "Afternoon"), Timeslot("12/7", "Night")])})
         self.assertEqual(schedule.preferred_count, 9)
         self.assertEqual(len(schedule.unscheduled_matches), 0)

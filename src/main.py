@@ -1,6 +1,6 @@
 from typing import Dict, List, Optional
 from schedule import Schedule
-from model import Day, Session, Contestant, Host, Match, Availability
+from model import Day, Session, Contestant, Host, Match, Availability, Timeslot
 import argparse
 import json
 import sys
@@ -26,13 +26,13 @@ hosts: List[Host] = data['hosts']
 matches: List[Match] = [(match['contestant1'], match['contestant2'])
                         for match in data['matches']]
 hosts_availability: Dict[Host, Availability] = {
-    host: {(timeslot['day'], timeslot['session']) for timeslot in _} for (host, _) in data['hosts_availability'].items()}
+    host: {Timeslot(timeslot['day'], timeslot['session']) for timeslot in _} for (host, _) in data['hosts_availability'].items()}
 hosts_preference: Dict[Host, Availability] = {
-    host: {(timeslot['day'], timeslot['session']) for timeslot in _} for (host, _) in data['hosts_preference'].items()}
+    host: {Timeslot(timeslot['day'], timeslot['session']) for timeslot in _} for (host, _) in data['hosts_preference'].items()}
 contestants_availability: Dict[Contestant, Availability] = {
-    contestant: {(timeslot['day'], timeslot['session']) for timeslot in _} for (contestant, _) in data['contestants_availability'].items()}
+    contestant: {Timeslot(timeslot['day'], timeslot['session']) for timeslot in _} for (contestant, _) in data['contestants_availability'].items()}
 contestants_preference: Dict[Contestant, Availability] = {
-    contestant: {(timeslot['day'], timeslot['session']) for timeslot in _} for (contestant, _) in data['contestants_preference'].items()}
+    contestant: {Timeslot(timeslot['day'], timeslot['session']) for timeslot in _} for (contestant, _) in data['contestants_preference'].items()}
 
 # main
 best_schedule: Optional[Schedule] = None
@@ -49,9 +49,9 @@ if args.o != None:
 
 for (match, config) in best_schedule.schedule:
     print('----- {} vs {} -----'.format(match[0], match[1]), file=output_stream)
-    print('Host: {}'.format(config[0]), file=output_stream)
-    print('Date: {}'.format(config[1][0]), file=output_stream)
-    print('Session: {}'.format(config[1][1]), file=output_stream)
+    print('Host: {}'.format(config.host), file=output_stream)
+    print('Date: {}'.format(config.timeslot.day), file=output_stream)
+    print('Session: {}'.format(config.timeslot.session), file=output_stream)
     print('', file=output_stream)
 
 print('-----------------', file=output_stream)

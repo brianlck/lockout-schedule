@@ -28,7 +28,7 @@ class Schedule:
                  hosts: List[Host],
                  sessions: List[Session],
                  matches: List[Match],
-                 schedule: Optional[List[Tuple[Match, Timeslot]]] = None,
+                 schedule: Optional[List[Tuple[Match, MatchConfig]]] = None,
                  unscheduled_matches: Optional[Set[Match]] = None,
                  preferred_count: Optional[int] = None):
         """ Basically a method to hard code your schedule """
@@ -61,19 +61,23 @@ class Schedule:
         for host in hosts:
             hosts_availability[host] = hosts_availability[host] - \
                 hosts_preference[host]
+            for item in hosts_preference[host]:
+                assert isinstance(item, Timeslot)
 
         for contestant in contestants:
             contestants_availability[contestant] = contestants_availability[contestant] - \
                 contestants_preference[contestant]
+            for item in contestants_preference[contestant]:
+                assert isinstance(item, Timeslot)
         # Construct flow network
         node_gen: Iterator[int] = itertools.count(0)
         source: int = next(node_gen)
         sink: int = next(node_gen)
         match_layer: Dict[Match, int] = {
             match: next(node_gen) for match in matches}
-        match_config_layer: Dict[MatchConfig, int] = {(host, (day, session)): next(node_gen)
+        match_config_layer: Dict[MatchConfig, int] = {MatchConfig(host, Timeslot(day, session)): next(node_gen)
                                                       for day in days for session in sessions for host in hosts}
-        timeslot_layer: Dict[Timeslot, int] = {(day, session): next(
+        timeslot_layer: Dict[Timeslot, int] = {Timeslot(day, session): next(
             node_gen) for day in days for session in sessions}
         day_layer: Dict[Day] = {day: next(node_gen) for day in days}
         nodes: int = next(node_gen)
@@ -91,14 +95,17 @@ class Schedule:
                     contestants_availability[match[1]]))
 
                 for timeslot in preferred_timeslots:
-                    match_config_edges[(match, (host, timeslot))] = network.add_edge(
-                        match_layer[match], match_config_layer[(host, timeslot)], capacity=1, cost=1+1+1)
+                    match_config = MatchConfig(host, timeslot)
+                    match_config_edges[(match, match_config)] = network.add_edge(
+                        match_layer[match], match_config_layer[match_config], capacity=1, cost=1+1+1)
                 for timeslot in partially_preferred_timeslots:
-                    match_config_edges[(match, (host, timeslot))] = network.add_edge(
-                        match_layer[match], match_config_layer[(host, timeslot)], capacity=1, cost=1+1+nodes)
+                    match_config = MatchConfig(host, timeslot)
+                    match_config_edges[(match, match_config)] = network.add_edge(
+                        match_layer[match], match_config_layer[match_config], capacity=1, cost=1+1+nodes)
                 for timeslot in available_timeslots:
-                    match_config_edges[(match, (host, timeslot))] = network.add_edge(
-                        match_layer[match], match_config_layer[(host, timeslot)], capacity=1, cost=1+nodes+nodes)
+                    match_config = MatchConfig(host, timeslot)
+                    match_config_edges[(match, match_config)] = network.add_edge(
+                        match_layer[match], match_config_layer[match_config], capacity=1, cost=1+nodes+nodes)
 
                 preferred_timeslots = hosts_availability[host].intersection(contestants_preference[match[0]].intersection(
                     contestants_preference[match[1]]))
@@ -108,24 +115,27 @@ class Schedule:
                     contestants_availability[match[1]]))
 
                 for timeslot in preferred_timeslots:
-                    match_config_edges[(match, (host, timeslot))] = network.add_edge(
-                        match_layer[match], match_config_layer[(host, timeslot)], capacity=1, cost=nodes+1+1)
+                    match_config = MatchConfig(host, timeslot)
+                    match_config_edges[(match, match_config)] = network.add_edge(
+                        match_layer[match], match_config_layer[match_config], capacity=1, cost=nodes+1+1)
                 for timeslot in partially_preferred_timeslots:
-                    match_config_edges[(match, (host, timeslot))] = network.add_edge(
-                        match_layer[match], match_config_layer[(host, timeslot)], capacity=1, cost=nodes+nodes+1)
+                    match_config = MatchConfig(host, timeslot)
+                    match_config_edges[(match, match_config)] = network.add_edge(
+                        match_layer[match], match_config_layer[match_config], capacity=1, cost=nodes+nodes+1)
                 for timeslot in available_timeslots:
-                    match_config_edges[(match, (host, timeslot))] = network.add_edge(
-                        match_layer[match], match_config_layer[(host, timeslot)], capacity=1, cost=nodes+nodes+nodes)
+                    match_config = MatchConfig(host, timeslot)
+                    match_config_edges[(match, match_config)] = network.add_edge(
+                        match_layer[match], match_config_layer[match_config], capacity=1, cost=nodes+nodes+nodes)
 
         for day in days:
             network.add_edge(day_layer[day], sink,
                              capacity=max_per_day, cost=0)
             for session in sessions:
-                timeslot = (day, session)
+                timeslot = Timeslot(day, session)
                 network.add_edge(
                     timeslot_layer[timeslot], day_layer[day], capacity=max_parallel, cost=0)
                 for host in hosts:
-                    network.add_edge(match_config_layer[(
+                    network.add_edge(match_config_layer[MatchConfig(
                         host, timeslot)], timeslot_layer[timeslot], capacity=max_parallel, cost=0)
 
         network.min_cost_max_flow(source, sink)
@@ -139,7 +149,7 @@ class Schedule:
                 schedule.unscheduled_matches.remove(match)
         # sort by match day, then by match session, then by match host
         schedule.schedule.sort(key=lambda match: (days.index(
-            match[1][1][0]), sessions.index(match[1][1][1]), hosts.index(match[1][0])))
+            match[1].timeslot.day), sessions.index(match[1].timeslot.session), hosts.index(match[1].host)))
         return schedule
 
     def better_than(self, schedule: 'Schedule') -> bool:
