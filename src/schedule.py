@@ -87,13 +87,14 @@ class Schedule:
         for match in matches:
             network.add_edge(source, match_layer[match], capacity=1, cost=0)
             for host in hosts:
+                # Match held in host preferred time slot
                 preferred_timeslots = hosts_preference[host].intersection(contestants_preference[match[0]].intersection(
                     contestants_preference[match[1]]))
                 partially_preferred_timeslots = hosts_preference[host].intersection(contestants_preference[match[0]].intersection(
                     contestants_availability[match[1]]).union(contestants_availability[match[0]].intersection(contestants_preference[match[1]])))
                 available_timeslots = hosts_preference[host].intersection(contestants_availability[match[0]].intersection(
                     contestants_availability[match[1]]))
-
+                    
                 for timeslot in preferred_timeslots:
                     match_config = MatchConfig(host, timeslot)
                     match_config_edges[(match, match_config)] = network.add_edge(
@@ -114,6 +115,7 @@ class Schedule:
                 available_timeslots = hosts_availability[host].intersection(contestants_availability[match[0]].intersection(
                     contestants_availability[match[1]]))
 
+                # Match held in host preferred time slot
                 for timeslot in preferred_timeslots:
                     match_config = MatchConfig(host, timeslot)
                     match_config_edges[(match, match_config)] = network.add_edge(

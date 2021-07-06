@@ -5,7 +5,7 @@ Day = NewType('Day', str)
 Session = NewType('Session', str)
 Host = NewType('Host', str)
 Contestant = NewType('Contestant', str)
-Match = NewType('Match', Tuple[str])
+Match = NewType('Match', Tuple[str, str])
 
 @dataclass
 class Timeslot:
