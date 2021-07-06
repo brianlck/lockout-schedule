@@ -3,6 +3,7 @@ from model import Availability, Contestant, Day, Host, Match, Session, Timeslot,
 from flow import FlowNetwork, Edge
 import itertools
 
+
 class Schedule:
     # schedule config
     max_parallel: int  # maximum number of parallel match
@@ -58,10 +59,12 @@ class Schedule:
                           contestants_preference: Dict[Contestant, Availability]) -> 'Schedule':
         """ Generate schedule based on availability """
         for host in hosts:
-            hosts_availability[host] = hosts_availability[host] - hosts_preference[host]
+            hosts_availability[host] = hosts_availability[host] - \
+                hosts_preference[host]
 
         for contestant in contestants:
-            contestants_availability[contestant] = contestants_availability[contestant] - contestants_preference[contestant]
+            contestants_availability[contestant] = contestants_availability[contestant] - \
+                contestants_preference[contestant]
         # Construct flow network
         node_gen: Iterator[int] = itertools.count(0)
         source: int = next(node_gen)
@@ -69,7 +72,7 @@ class Schedule:
         match_layer: Dict[Match, int] = {
             match: next(node_gen) for match in matches}
         match_config_layer: Dict[MatchConfig, int] = {(host, (day, session)): next(node_gen)
-                                                        for day in days for session in sessions for host in hosts}
+                                                      for day in days for session in sessions for host in hosts}
         timeslot_layer: Dict[Timeslot, int] = {(day, session): next(
             node_gen) for day in days for session in sessions}
         day_layer: Dict[Day] = {day: next(node_gen) for day in days}
@@ -134,6 +137,9 @@ class Schedule:
                 schedule.schedule.append((match, config))
                 schedule.preferred_count += edge.cost % nodes
                 schedule.unscheduled_matches.remove(match)
+        # sort by match day, then by match session, then by match host
+        schedule.schedule.sort(key=lambda match: (days.index(
+            match[1][1][0]), sessions.index(match[1][1][1]), hosts.index(match[1][0])))
         return schedule
 
     def better_than(self, schedule: 'Schedule') -> bool:
@@ -157,4 +163,3 @@ class Schedule:
             return self.max_per_day < schedule.max_per_day
 
         return False  # two schedules are equally as good
-        
