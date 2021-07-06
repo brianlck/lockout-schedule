@@ -1,0 +1,24 @@
+----- ethening vs benson1029 -----
+Host: host1
+Date: 11/7
+Session: Evening
+
+----- lckcode vs benson1029 -----
+Host: host1
+Date: 11/7
+Session: Night
+
+----- lckcode vs chengheichit -----
+Host: host1
+Date: 12/7
+Session: Evening
+
+----- chengheichit vs ethening -----
+Host: host1
+Date: 12/7
+Session: Night
+
+-----------------
+Preferred count: 9
+Max parallel: 3
+Unscheduled Matches: set()

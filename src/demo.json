@@ -1,0 +1,281 @@
+{
+    "max_parallel": 3,
+    "days": [
+        "10/7",
+        "11/7",
+        "12/7"
+    ],
+    "contestants": [
+        "lckcode",
+        "benson1029",
+        "chengheichit",
+        "ethening"
+    ],
+    "hosts": [
+        "host1",
+        "host2"
+    ],
+    "sessions": [
+        "Afternoon",
+        "Evening",
+        "Night"
+    ],
+    "matches": [
+        {
+            "contestant1": "lckcode",
+            "contestant2": "benson1029"
+        },
+        {
+            "contestant1": "chengheichit",
+            "contestant2": "ethening"
+        },
+        {
+            "contestant1": "lckcode",
+            "contestant2": "chengheichit"
+        },
+        {
+            "contestant1": "ethening",
+            "contestant2": "benson1029"
+        }
+    ],
+    "hosts_availability": {
+        "host1": [
+            {
+                "day": "12/7",
+                "session": "Night"
+            },
+            {
+                "day": "12/7",
+                "session": "Afternoon"
+            },
+            {
+                "day": "11/7",
+                "session": "Evening"
+            },
+            {
+                "day": "10/7",
+                "session": "Evening"
+            },
+            {
+                "day": "11/7",
+                "session": "Night"
+            },
+            {
+                "day": "11/7",
+                "session": "Afternoon"
+            },
+            {
+                "day": "10/7",
+                "session": "Night"
+            },
+            {
+                "day": "10/7",
+                "session": "Afternoon"
+            },
+            {
+                "day": "12/7",
+                "session": "Evening"
+            }
+        ],
+        "host2": [
+            {
+                "day": "11/7",
+                "session": "Evening"
+            },
+            {
+                "day": "10/7",
+                "session": "Evening"
+            },
+            {
+                "day": "11/7",
+                "session": "Afternoon"
+            },
+            {
+                "day": "10/7",
+                "session": "Night"
+            },
+            {
+                "day": "12/7",
+                "session": "Evening"
+            }
+        ]
+    },
+    "hosts_preference": {
+        "host1": [
+            {
+                "day": "12/7",
+                "session": "Afternoon"
+            },
+            {
+                "day": "12/7",
+                "session": "Evening"
+            },
+            {
+                "day": "10/7",
+                "session": "Night"
+            },
+            {
+                "day": "11/7",
+                "session": "Evening"
+            },
+            {
+                "day": "12/7",
+                "session": "Night"
+            },
+            {
+                "day": "11/7",
+                "session": "Night"
+            }
+        ],
+        "host2": [
+            {
+                "day": "12/7",
+                "session": "Evening"
+            },
+            {
+                "day": "10/7",
+                "session": "Night"
+            },
+            {
+                "day": "10/7",
+                "session": "Evening"
+            }
+        ]
+    },
+    "contestants_availability": {
+        "lckcode": [
+            {
+                "day": "11/7",
+                "session": "Evening"
+            },
+            {
+                "day": "10/7",
+                "session": "Evening"
+            },
+            {
+                "day": "10/7",
+                "session": "Afternoon"
+            },
+            {
+                "day": "12/7",
+                "session": "Evening"
+            },
+            {
+                "day": "11/7",
+                "session": "Night"
+            }
+        ],
+        "benson1029": [
+            {
+                "day": "11/7",
+                "session": "Night"
+            },
+            {
+                "day": "10/7",
+                "session": "Night"
+            },
+            {
+                "day": "10/7",
+                "session": "Evening"
+            },
+            {
+                "day": "11/7",
+                "session": "Evening"
+            }
+        ],
+        "chengheichit": [
+            {
+                "day": "12/7",
+                "session": "Night"
+            },
+            {
+                "day": "12/7",
+                "session": "Evening"
+            },
+            {
+                "day": "12/7",
+                "session": "Afternoon"
+            },
+            {
+                "day": "10/7",
+                "session": "Afternoon"
+            }
+        ],
+        "ethening": [
+            {
+                "day": "11/7",
+                "session": "Evening"
+            },
+            {
+                "day": "11/7",
+                "session": "Afternoon"
+            },
+            {
+                "day": "10/7",
+                "session": "Night"
+            },
+            {
+                "day": "10/7",
+                "session": "Evening"
+            },
+            {
+                "day": "10/7",
+                "session": "Afternoon"
+            },
+            {
+                "day": "12/7",
+                "session": "Night"
+            }
+        ]
+    },
+    "contestants_preference": {
+        "lckcode": [
+            {
+                "day": "11/7",
+                "session": "Night"
+            },
+            {
+                "day": "12/7",
+                "session": "Evening"
+            },
+            {
+                "day": "10/7",
+                "session": "Afternoon"
+            }
+        ],
+        "benson1029": [
+            {
+                "day": "11/7",
+                "session": "Night"
+            }
+        ],
+        "chengheichit": [
+            {
+                "day": "12/7",
+                "session": "Night"
+            },
+            {
+                "day": "10/7",
+                "session": "Afternoon"
+            }
+        ],
+        "ethening": [
+            {
+                "day": "10/7",
+                "session": "Evening"
+            },
+            {
+                "day": "12/7",
+                "session": "Night"
+            },
+            {
+                "day": "10/7",
+                "session": "Afternoon"
+            },
+            {
+                "day": "11/7",
+                "session": "Afternoon"
+            }
+        ]
+    }
+}
